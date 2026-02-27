@@ -1,10 +1,11 @@
 # Question1 Code
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 from svp import svp
 
 init_size = 1e-6 # 1um
-t_end = 40*60 # 40 Mins
+t_end = 40*60 # 40 Mins in seconds
 s = 0.003 # Supersaturation
 T = 283
 t_step = 0.001
@@ -34,7 +35,7 @@ def A_fn(
     denom = (L_v**2*p_w)/(k*R_v*T**2) + (p_w*R_v)/(k_v*svp([0, T]))
     return 1/denom
 
-A_3: float = A_fn(Lv, Rho_w, k, Rv, T, Kv)
+A_3_part_1: float = A_fn(Lv, Rho_w, k, Rv, T, Kv)
 
 def drdt(
     A3: float,
@@ -54,7 +55,7 @@ def drdt(
     """
     return A3*s/r
 
-def forw_euler(r: float) -> list[float]:
+def forw_euler(r: float, A_3: float, t_step: float) -> list[float]:
     """
     
     """
@@ -66,7 +67,7 @@ def forw_euler(r: float) -> list[float]:
         t += t_step
     return r_vals
 
-def runge_kutta(r: float) -> float:
+def runge_kutta(r: float, A_3: float, t_step: float) -> float:
     """
     
     """
@@ -82,9 +83,9 @@ def runge_kutta(r: float) -> float:
         t += t_step
     return r_vals
 
-if __name__ == "__main__":
-    forw_vals = forw_euler(init_size)
-    rk_vals = runge_kutta(init_size)
+def part_a():
+    forw_vals = forw_euler(init_size, A_3_part_1, t_step)
+    rk_vals = runge_kutta(init_size, A_3_part_1, t_step)
     t_vals = np.arange(0, t_end+t_step, t_step)
     plt.figure(figsize=(16,9))
     plt.plot(t_vals, forw_vals, label = "Forward Euler")
@@ -95,3 +96,24 @@ if __name__ == "__main__":
     plt.grid()
     plt.show()
     plt.savefig("Q1Stan.png", dpi=1200)
+
+def part_c():
+    temp_range = np.arange(100, 300, 10) # 0 to 300K in 0.1K increments
+    init_size_range = np.arange(1e-8, 1e-5, 1e-7)
+    final_sizes: list[list[floats]] = []
+    for temp in temp_range:
+        print(f"{temp=}")
+        sizes: list[float] = []
+        A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
+        for init_size in init_size_range:
+            final_size = runge_kutta(init_size, A_3, 1)[-1]
+            sizes.append(final_size)
+        final_sizes.append(sizes)
+    X, Y = np.meshgrid(init_size_range, temp_range)
+    ax = plt.axes(projection="3d")
+    ax.plot_surface(X, Y, np.array(final_sizes))
+    plt.show()
+
+if __name__ == "__main__":
+    part_a()
+    part_c()
