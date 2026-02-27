@@ -7,7 +7,7 @@ init_size = 1e-6 # 1um
 t_end = 40*60 # 40 Mins
 s = 0.003 # Supersaturation
 T = 283
-t_step = 0.1
+t_step = 0.001
 
 # Constants
 Pi = np.pi                     # More precise and cleaner than hardcoding
@@ -85,9 +85,13 @@ def runge_kutta(r: float) -> float:
 if __name__ == "__main__":
     forw_vals = forw_euler(init_size)
     rk_vals = runge_kutta(init_size)
-    t_vals = np.arange(0, t_end+2*t_step, t_step)
+    t_vals = np.arange(0, t_end+t_step, t_step)
     plt.figure(figsize=(16,9))
     plt.plot(t_vals, forw_vals, label = "Forward Euler")
     plt.plot(t_vals, rk_vals, label = "Runge_kutta 4")
     plt.legend(loc="best")
+    plt.xlabel("Time (s)")
+    plt.ylabel("Droplet size (m)", rotation="horizontal")
+    plt.grid()
     plt.show()
+    plt.savefig("Q1Stan.png", dpi=1200)
