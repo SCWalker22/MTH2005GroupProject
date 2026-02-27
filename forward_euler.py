@@ -22,10 +22,10 @@ dt = 1.0 # Time step (s)
 es = svp([0, T])
 
 
-# Calculate thermodynamic factor A1
+# Calculate thermodynamic factor A3
 term1 = Lv * Rho_w / (k * Rv * T)
 term2 = Rho_w * Rv * T / (Kv * es)
-A1 = 1.0 / (term1 + term2)
+A3 = 1.0 / (term1 + term2)
 
 
 # Initial conditions for Forward Euler
@@ -34,7 +34,7 @@ r = r0 # Initial radius
 
 # Forward Euler loop
 while t < total_time:
-    dr_dt = A1 * s / r
+    dr_dt = A3 * s / r
     r = r + dt * dr_dt
     t = t + dt
 
