@@ -38,5 +38,6 @@ while t < total_time:
     r = r + dt * dr_dt
     t = t + dt
 
+print(f"Initial radius: 1 μm")
 print(f"Radius after {total_time} seconds: {r*1e6:.4f} μm")
 print(f"Growth: {(r-r0)*1e6:.4f} μm")
