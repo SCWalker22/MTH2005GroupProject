@@ -23,7 +23,7 @@ es = svp([0, T])
 
 
 # Calculate thermodynamic factor A3
-term1 = Lv * Rho_w / (k * Rv * T)
+term1 = (Lv**2) * Rho_w / (k * Rv * (T**2))
 term2 = Rho_w * Rv * T / (Kv * es)
 A3 = 1.0 / (term1 + term2)
 
