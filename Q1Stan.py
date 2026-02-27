@@ -55,7 +55,12 @@ def drdt(
     """
     return A3*s/r
 
-def forw_euler(r: float, A_3: float, t_step: float) -> list[float]:
+def forw_euler(
+    r: float,
+    A_3: float,
+    t_step: float
+    
+    ) -> list[float]:
     """
     
     """
@@ -67,9 +72,17 @@ def forw_euler(r: float, A_3: float, t_step: float) -> list[float]:
         t += t_step
     return r_vals
 
-def runge_kutta(r: float, A_3: float, t_step: float) -> float:
-    """
+def runge_kutta(
+    r: float,
+    A_3: float,
+    t_step: float
     
+    ) -> float:
+    """
+    4th Order Runge-Kutta timestepping
+
+    Args:
+
     """
     r_vals: list[float] = [r]
     t = 0
@@ -84,6 +97,9 @@ def runge_kutta(r: float, A_3: float, t_step: float) -> float:
     return r_vals
 
 def part_a():
+    """
+
+    """
     forw_vals = forw_euler(init_size, A_3_part_1, t_step)
     rk_vals = runge_kutta(init_size, A_3_part_1, t_step)
     t_vals = np.arange(0, t_end+t_step, t_step)
@@ -95,10 +111,12 @@ def part_a():
     plt.ylabel("Droplet size (m)", rotation="horizontal")
     plt.grid()
     plt.show()
-    plt.savefig("Q1Stan.png", dpi=1200)
 
 def part_c():
-    temp_range = np.arange(100, 300, 10) # 0 to 300K in 0.1K increments
+    """
+
+    """
+    temp_range = np.arange(200, 350, 1) # 100 to 300K in 0.1K increments
     init_size_range = np.arange(1e-8, 1e-5, 1e-7)
     final_sizes: list[list[floats]] = []
     for temp in temp_range:
@@ -112,6 +130,7 @@ def part_c():
     X, Y = np.meshgrid(init_size_range, temp_range)
     ax = plt.axes(projection="3d")
     ax.plot_surface(X, Y, np.array(final_sizes))
+    # Can plot multiple surafces every 10 mins???
     plt.show()
 
 if __name__ == "__main__":
