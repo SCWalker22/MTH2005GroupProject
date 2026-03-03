@@ -45,7 +45,7 @@ def A_fn(
         k_v: Diffusivity of Water in air
 
     Returns:
-        A_3: Thermodynamic paper as defined in notes
+        A_3: Thermodynamic factor as defined in notes (Devenish et al., 2016)
     """
     denom = (L_v**2*p_w)/(k*R_v*T**2) + (p_w*R_v)/(k_v*svp([0, T]))
     return 1/denom
@@ -133,9 +133,13 @@ def part_a():
     """
     Code to compute Q1 Part a
     """
+    # Calculate drop sizes using forward Euler and Runge-Kutta schemes
     forw_vals = forw_euler(init_size, A_3_part_1, t_step)
     rk_vals = runge_kutta(init_size, A_3_part_1, t_step)
+     # Create a list of timestep values for x-axis
     t_vals = np.arange(0, t_end+t_step, t_step)
+
+    # Start setting up graph, giving a title, plotting lines, setting axes
     plt.figure(figsize=(16,9))
     plt.plot(t_vals, forw_vals, label = "Forward Euler")
     plt.plot(t_vals, rk_vals, label = "Runge_kutta 4")
@@ -143,28 +147,31 @@ def part_a():
     plt.xlabel("Time (s)")
     plt.ylabel("Droplet size (m)", rotation="horizontal")
     plt.grid()
+    # Show Graph
     plt.show()
 
 def part_c():
     """
     Code to compute Q1 Part C
     """
+    # Set up plot to be 3D
     ax = plt.axes(projection="3d")
-    temp_range = np.arange(200, 350, 10) # 100 to 350K in 1K increments
-    init_size_range = np.arange(1e-7, 1e-5, 1e-7)
-    times: list[int] = [10*60, 20*60, 30*60, 40*60]
-    X, Y = np.meshgrid(init_size_range, temp_range)
-    # for time_end in times:
-    #     final_sizes: list[list[float]] = []
-    #     for temp in temp_range:
+    temp_range = np.arange(200, 350, 10) # Create a range of temperatures to iterate through
+    init_size_range = np.arange(1e-7, 1e-5, 1e-7) # Create a range of intial sizes to loop through
+    times: list[int] = [10*60, 20*60, 30*60, 40*60] # List of times to loop thorugh, to check growth throughout time frame
+    X, Y = np.meshgrid(init_size_range, temp_range) # Create a meshgrid for X, Y axis, allows us to do a 3D plot
+    # for time_end in times: # Loop through times
+    #     final_sizes: list[list[float]] = [] # Create an array to fill with final sizes, it is a 2D array since we have a 3D graph
+    #     for temp in temp_range: # Loop through different temperaturs
     #         sizes: list[float] = []
-    #         A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
-    #         for init_size in init_size_range:
-    #             final_size = runge_kutta(init_size, A_3, 1, t_end=time_end)[-1]
+    #         A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv) # Calculate the thermodynamic factor for each temperature
+    #         for init_size in init_size_range: # Loop through each intial size
+    #             final_size = runge_kutta(init_size, A_3, 1, t_end=time_end)[-1] # Calculate the final size (uses RK scheme - Faster w/ FE?)
     #             sizes.append(final_size)
-    #         final_sizes.append(sizes)
+    #         final_sizes.append(sizes) # Append the final sizes to our list
     #     # X, Y = np.meshgrid(init_size_range, temp_range)
     #     # ax = plt.axes(projection="3d")
+    #     # Set up graph
     #     ax.set_title("3D surface of drop size by varying temperature and initial drop size")
     #     ax.set_xlabel("Initial Drop size (m)")
     #     ax.set_ylabel("Temperature")
@@ -172,6 +179,7 @@ def part_c():
     #     # Can plot multiple surafces every 10 mins???
     # plt.show()
 
+    # Attempting to plot some 2D slices of graph
     final_sizes: list[float] = []
     A_3 = A_fn(Lv, Rho_w, k, Rv, 283, Kv)
     for init_size in init_size_range:
