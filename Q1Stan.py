@@ -150,6 +150,64 @@ def part_a():
     # Show Graph
     plt.show()
 
+def graph_slices(
+        end_time: int = 40*60,
+        num_steps: int = 10,
+        t_step: int = 0.001
+    ) -> None:
+    """
+    Create a Graph from a 2D slice of temperature, initial radius, final radius graph, based on user input in CLI
+
+    Args:
+        end_time: (Optional) end of iteration time in seconds
+        num_steps: (Option) Number of computation steps on x-axis (number of points)
+        t_step: (Optional) Time delta between iteration steps
+    """
+    temp_or_size: str = input("Would you like to vary temperature or size? (T, r): ")
+    while temp_or_size not in ["T", "r"]:
+        temp_or_size: str = input("Would you like to vary temperature or size? (T, r): ")
+    
+    final_sizes: list[float] = []
+    if temp_or_size == "T":
+        graph_title: str = f"Plot of changing temperature on growth of rain drop after {t_end/60} minutes"
+        x_axis_label: str = "Temperature (K)"
+        min_temp: int = int(input("Enter minimum temperature (K): "))
+        max_temp: int = int(input("Enter maximum temperature (K): "))
+        init_size: float = float(input("Enter initial radius (m - Try 1e-6): "))
+        other_val = init_size
+        temperatures = np.linspace(min_temp, max_temp, num_steps+1)
+        x = temperatures
+        for temp in temperatures:
+            print(temp)
+            A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
+            final_size = runge_kutta(init_size, A_3, t_step, t_end=end_time)[-1]
+            final_sizes.append(final_size)
+
+    else:
+        graph_title: str = f"Plot of changing initial radius on growth of rain drop after {t_end/60} minutes"
+        x_axis_label: str = "Initial Radius (m)"
+        min_radius = int(input("Enter minimum radius (m): "))
+        max_radius: int = int(input("Enter maximum radius (m): "))
+        temp: int = int(input("Enter temperature (K - Try 283): "))
+        other_val = temp
+        radii = np.linspace(min_radius, max_radius, num_steps+1)
+        x = radii
+        A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
+        for radius in radii:
+            final_size = runge_kutta(radius, A_3, t_step, t_end=end_time)[-1]
+            final_sizes.append(final_size)
+
+    plt.figure(figsize=(16, 9))
+    plt.grid()
+    plt.title(graph_title)
+    plt.xlabel(x_axis_label)
+    plt.ylabel("Final size of drop (m)")
+    print(f"{len(x)=}, {len(final_sizes)=}")
+    plt.plot(x, final_sizes)
+    plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}")
+    plt.show()
+
+
 def part_c():
     """
     Code to compute Q1 Part C
@@ -160,33 +218,28 @@ def part_c():
     init_size_range = np.arange(1e-7, 1e-5, 1e-7) # Create a range of intial sizes to loop through
     times: list[int] = [10*60, 20*60, 30*60, 40*60] # List of times to loop thorugh, to check growth throughout time frame
     X, Y = np.meshgrid(init_size_range, temp_range) # Create a meshgrid for X, Y axis, allows us to do a 3D plot
-    # for time_end in times: # Loop through times
-    #     final_sizes: list[list[float]] = [] # Create an array to fill with final sizes, it is a 2D array since we have a 3D graph
-    #     for temp in temp_range: # Loop through different temperaturs
-    #         sizes: list[float] = []
-    #         A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv) # Calculate the thermodynamic factor for each temperature
-    #         for init_size in init_size_range: # Loop through each intial size
-    #             final_size = runge_kutta(init_size, A_3, 1, t_end=time_end)[-1] # Calculate the final size (uses RK scheme - Faster w/ FE?)
-    #             sizes.append(final_size)
-    #         final_sizes.append(sizes) # Append the final sizes to our list
-    #     # X, Y = np.meshgrid(init_size_range, temp_range)
-    #     # ax = plt.axes(projection="3d")
-    #     # Set up graph
-    #     ax.set_title("3D surface of drop size by varying temperature and initial drop size")
-    #     ax.set_xlabel("Initial Drop size (m)")
-    #     ax.set_ylabel("Temperature")
-    #     ax.plot_surface(X, Y, np.array(final_sizes), label=f"Drop Size after {time_end} mins")
-    #     # Can plot multiple surafces every 10 mins???
-    # plt.show()
+    for time_end in times: # Loop through times
+        final_sizes: list[list[float]] = [] # Create an array to fill with final sizes, it is a 2D array since we have a 3D graph
+        for temp in temp_range: # Loop through different temperaturs
+            sizes: list[float] = []
+            A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv) # Calculate the thermodynamic factor for each temperature
+            for init_size in init_size_range: # Loop through each intial size
+                final_size = runge_kutta(init_size, A_3, 1, t_end=time_end)[-1] # Calculate the final size (uses RK scheme - Faster w/ FE?)
+                sizes.append(final_size)
+            final_sizes.append(sizes) # Append the final sizes to our list
+        # X, Y = np.meshgrid(init_size_range, temp_range)
+        # ax = plt.axes(projection="3d")
+        # Set up graph
+        ax.set_title("3D surface of drop size by varying temperature and initial drop size")
+        ax.set_xlabel("Initial Drop size (m)")
+        ax.set_ylabel("Temperature")
+        ax.plot_surface(X, Y, np.array(final_sizes), label=f"Drop Size after {time_end} mins")
+        # Can plot multiple surafces every 10 mins???
+    plt.show()
 
     # Attempting to plot some 2D slices of graph
-    final_sizes: list[float] = []
-    A_3 = A_fn(Lv, Rho_w, k, Rv, 283, Kv)
-    for init_size in init_size_range:
-        final_size = runge_kutta(init_size, A_3, 0.1)[-1]
-        final_sizes.append(final_sizes)
-    plt.plot(init_size_range, final_sizes)
-    plt.show()
+    for _ in range(5):
+        graph_slices()
 
 
 if __name__ == "__main__":
