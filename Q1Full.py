@@ -27,6 +27,8 @@ t_end = 40*60                  # Time of iterations (s)
 s = 0.003                      # Supersaturation (%)
 T = 283                        # Atmospheric Temperature (K)
 t_step = 0.001                 # Time step (s)
+t_min = 275                    # Minimum Temperature (K)
+t_max = 330                    # Maximum Temperature (K)
 
 def A_fn(
         L_v: float,
@@ -214,7 +216,6 @@ def graph_slices(
     plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}")
     plt.show()
 
-
 def part_c():
     """
     Code to compute Q1 Part C
@@ -222,7 +223,7 @@ def part_c():
     # Set up plot to be 3D
     plt.figure(figsize=(16, 9))
     ax = plt.axes(projection="3d")
-    temp_range = np.arange(200, 350, 10) # Create a range of temperatures to iterate through
+    temp_range = np.arange(t_min, t_max, 10) # Create a range of temperatures to iterate through
     init_size_range = np.arange(1e-7, 1e-5, 1e-7) # Create a range of intial sizes to loop through
     times: list[int] = [10*60, 20*60, 30*60, 40*60] # List of times to loop thorugh, to check growth throughout time frame
     X, Y = np.meshgrid(init_size_range, temp_range) # Create a meshgrid for X, Y axis, allows us to do a 3D plot
@@ -241,7 +242,8 @@ def part_c():
         ax.set_title("3D surface of drop size by varying temperature and initial drop size")
         ax.set_xlabel("Initial Drop size (m)")
         ax.set_ylabel("Temperature")
-        ax.plot_surface(X, Y, np.array(final_sizes), label=f"Drop Size after {time_end} mins")
+        ax.plot_surface(X, Y, np.array(final_sizes), label=f"Drop Size after {time_end/60} mins")
+    plt.legend(loc="upper right")
     plt.savefig("Q1C(3D).png", dpi=1200)
     plt.show()
 
@@ -253,7 +255,7 @@ def part_d():
     """
     """
     # temperature range
-    temp = np.arange(250, 330, 0.1)
+    temp = np.arange(t_min, t_max, 0.1)
     s = 0.003   # constant supersaturation
     A3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
     r = 1e-3   # precipitation begins at this droplet size
@@ -278,7 +280,7 @@ def part_e():
     """
     """
     # temperature range
-    temp = np.arange(250, 330, 0.1)
+    temp = np.arange(t_min, t_max, 0.1)
     s = -0.3   # supersaturation changed to 70%
     A3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
     r = 1e-3   # precipitation begins at this droplet size
