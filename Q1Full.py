@@ -2,6 +2,8 @@
 # All code for Q1 is in here, in order, there are some shared values, the constants at the top
 # But other functionality should all be added to the function, ie in def part_a():
 
+# ============================= Please go through and check you are happy with your section, and comment====================================
+
 # Libraries
 import numpy as np
 import matplotlib.pyplot as plt
@@ -218,6 +220,7 @@ def part_c():
     Code to compute Q1 Part C
     """
     # Set up plot to be 3D
+    plt.figure(figsize=(16, 9))
     ax = plt.axes(projection="3d")
     temp_range = np.arange(200, 350, 10) # Create a range of temperatures to iterate through
     init_size_range = np.arange(1e-7, 1e-5, 1e-7) # Create a range of intial sizes to loop through
@@ -239,7 +242,7 @@ def part_c():
         ax.set_xlabel("Initial Drop size (m)")
         ax.set_ylabel("Temperature")
         ax.plot_surface(X, Y, np.array(final_sizes), label=f"Drop Size after {time_end} mins")
-        # Can plot multiple surafces every 10 mins???
+    plt.savefig("Q1C(3D).png", dpi=1200)
     plt.show()
 
     # Attempting to plot some 2D slices of graph
@@ -297,6 +300,6 @@ def part_e():
 if __name__ == "__main__":
     part_a()
     # No code needed for part b
-    # part_c() # Temporarily removed, takes way too long to run - just testing things
+    part_c()
     part_d()
     part_e()
