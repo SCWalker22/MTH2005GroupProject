@@ -1,15 +1,10 @@
-# Question1 Code
+# Question 1 Combined
+
+# Libraries
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 from svp import svp
-
-# Constants for Q 1 (a)
-init_size = 1e-6 # 1um
-t_end = 40*60 # 40 Mins in seconds
-s = 0.003 # Supersaturation
-T = 283 # Temperature (K)
-t_step = 0.001 # Time step (s)
 
 # Constants
 Pi = np.pi                     # More precise and cleaner than hardcoding
@@ -23,6 +18,11 @@ Ra = 287.0                     # Gas constant of dry air (J kg^-1 K^-1)
 Rv = 462.0                     # Gas constant of water vapour (J kg^-1 K^-1)
 k = 0.024                      # Thermal conductivity of air (J m^-1 s^-1 K^-1)
 Kv = 2.21e-5                   # Diffusivity of water vapour (m^2 s^-1)
+init_size = 1e-6               # Initial droplet size (m)
+t_end = 40*60                  # Time of iterations (s)
+s = 0.003                      # Supersaturation (%)
+T = 283                        # Atmospheric Temperature (K)
+t_step = 0.001                 # Time step (s)
 
 def A_fn(
         L_v: float,
@@ -49,8 +49,6 @@ def A_fn(
     """
     denom = (L_v**2*p_w)/(k*R_v*T**2) + (p_w*R_v)/(k_v*svp([0, T]))
     return 1/denom
-
-A_3_part_1: float = A_fn(Lv, Rho_w, k, Rv, T, Kv)
 
 def drdt(
     A3: float,
@@ -131,23 +129,24 @@ def runge_kutta(
 
 def part_a():
     """
-    Code to compute Q1 Part a
     """
-    # Calculate drop sizes using forward Euler and Runge-Kutta schemes
-    forw_vals = forw_euler(init_size, A_3_part_1, t_step)
-    rk_vals = runge_kutta(init_size, A_3_part_1, t_step)
-     # Create a list of timestep values for x-axis
     t_vals = np.arange(0, t_end+t_step, t_step)
+    A_3: float = A_fn(Lv, Rho_w, k, Rv, T, Kv)
+    # Forward Euler
+    r_euler = forw_euler(init_size, A_3, t_step, t_end=t_end)
 
-    # Start setting up graph, giving a title, plotting lines, setting axes
+    # Runge-Kutta
+    r_rk4 = runge_kutta(init_size, A_3, t_step, t_end=t_end)
+
     plt.figure(figsize=(16,9))
-    plt.plot(t_vals, forw_vals, label = "Forward Euler")
-    plt.plot(t_vals, rk_vals, label = "Runge_kutta 4")
-    plt.legend(loc="best")
-    plt.xlabel("Time (s)")
-    plt.ylabel("Droplet size (m)", rotation="horizontal")
+    plt.plot(t_vals/60, r_euler, label="Forward Euler")
+    plt.plot(t_vals/60, r_rk4, ':', label="RK4", color = 'red')
+    plt.xlabel("Time (minutes)")
+    plt.ylabel("Droplet Radius (μm)")
+    plt.title("Cloud Droplet Growth (T=283K, s=0.30%)")
+    plt.legend()
     plt.grid()
-    # Show Graph
+    plt.savefig("Q1A.png", dpi=1200)
     plt.show()
 
 def graph_slices(
@@ -241,7 +240,17 @@ def part_c():
     for _ in range(5):
         graph_slices()
 
+def part_d():
+    """
+    """
+    pass
+
+def part_e():
+    """
+    """
+    pass
+
 
 if __name__ == "__main__":
-    # part_a()
+    part_a()
     part_c()
