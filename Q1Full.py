@@ -165,9 +165,13 @@ def graph_slices(
         t_step: (Optional) Time delta between iteration steps
     """
     temp_or_size: str = input("Would you like to vary temperature or size? (T, r): ")
-    while temp_or_size not in ["T", "r"]:
+    while temp_or_size.lower() not in ["t", "r", "exit", "quit", "q", ""]:
         temp_or_size: str = input("Would you like to vary temperature or size? (T, r): ")
     
+    if temp_or_size.lower() in ["exit", "quit", "q", ""]:
+        # Allow user to exit loop early if needed
+        return None
+
     final_sizes: list[float] = []
     if temp_or_size == "T":
         graph_title: str = f"Plot of changing temperature on growth of rain drop after {t_end/60} minutes"
