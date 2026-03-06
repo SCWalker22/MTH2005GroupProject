@@ -20,7 +20,7 @@ def svp(X):
     """
 
     # Convert input to NumPy array (allows list, tuple, ndarray, etc.)
-    X = np.asarray(X)
+    # X = np.asarray(X)
 
     T = X[1]
 

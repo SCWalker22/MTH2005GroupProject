@@ -1,4 +1,6 @@
 # Question 1 Combined
+# All code for Q1 is in here, in order, there are some shared values, the constants at the top
+# But other functionality should all be added to the function, ie in def part_a():
 
 # Libraries
 import numpy as np
@@ -29,10 +31,10 @@ def A_fn(
         p_w: float,
         k: float,
         R_v: float,
-        T: float,
+        T: float | list[float],
         k_v: float
 
-    ) -> float:
+    ) -> float | list[float]:
     """
     Compute A_3 using provided SVP (Satruation Vapour Pressure) function, and constants, including temperature
 
@@ -48,7 +50,7 @@ def A_fn(
         A_3: Thermodynamic factor as defined in notes (Devenish et al., 2016)
     """
     denom = (L_v**2*p_w)/(k*R_v*T**2) + (p_w*R_v)/(k_v*svp([0, T]))
-    return 1/denom
+    return denom**(-1)
 
 def drdt(
     A3: float,
@@ -243,14 +245,54 @@ def part_c():
 def part_d():
     """
     """
-    pass
+    # temperature range
+    temp = np.arange(250, 330, 0.1)
+    s = 0.003   # constant supersaturation
+    A3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
+    r = 1e-3   # precipitation begins at this droplet size
+
+    # rearranging analytic solution (for initial conditions we had in 1a)
+    # for t to give time taken to reach precipitation size in days
+    totaltime = (r**2 - 1e-12)/(2*A3*s)  /  (60**2 * 24)
+
+    # plotting graph of temperature against time taken
+    plt.figure(figsize=(16, 9))
+    plt.plot(temp, totaltime, color = "purple")
+    plt.xlim(250, 330)
+    plt.xlabel("Temperature (K)")
+    plt.ylabel("Time taken to reach precipitation size (days)")
+    plt.savefig("Q1D.png", dpi=1200)
+    plt.show()
+
+    # printing final time taken to show shortest time
+    print(totaltime[-1])
 
 def part_e():
     """
     """
-    pass
+    # temperature range
+    temp = np.arange(250, 330, 0.1)
+    s = -0.3   # supersaturation changed to 70%
+    A3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
+    r = 1e-3   # precipitation begins at this droplet size
+
+    # rearranging analytic solution (constant of integration is different now since initial droplet size has changed)
+    # also r = 0 now since we want time taken to evaporate completely
+    totaltime = (-6.4e-11)/(2*A3*s)
+
+    # plotting graph of temperature against time taken
+    plt.figure(figsize=(16, 9))
+    plt.plot(temp, totaltime, color = "cyan")
+    plt.xlim(250, 330)
+    plt.xlabel("Temperature (K)")
+    plt.ylabel("Time taken to evaporate completely (s)")
+    plt.savefig("Q1E.png", dpi=1200)
+    plt.show()
 
 
 if __name__ == "__main__":
     part_a()
-    part_c()
+    # No code needed for part b
+    # part_c() # Temporarily removed, takes way too long to run - just testing things
+    part_d()
+    part_e()
