@@ -267,7 +267,7 @@ def part_d():
     # plotting graph of temperature against time taken
     plt.figure(figsize=(16, 9))
     plt.plot(temp, totaltime, color = "purple")
-    plt.xlim(250, 330)
+    plt.xlim(275, 330)
     plt.xlabel("Temperature (K)")
     plt.ylabel("Time taken to reach precipitation size (days)")
     plt.savefig("Q1D.png", dpi=1200)
@@ -275,6 +275,19 @@ def part_d():
 
     # printing final time taken to show shortest time
     print(totaltime[-1])
+        
+    # repeating for drizzle size (1x10^-4)
+    r = 1e-4
+    totaltime = (r**2 - 1e-12)/(2*A3*s)  /  (60**2)
+
+    plt.plot(temp, totaltime, color = "purple")
+    plt.xlim(t_min, t_max)
+    plt.xlabel("Temperature (K)")
+    plt.ylabel("Time taken to reach drizzle size (hours)")
+    plt.show()
+
+    # printing time taken for lowest temperature (longest time)
+    print(totaltime[0])
 
 def part_e():
     """
@@ -292,7 +305,7 @@ def part_e():
     # plotting graph of temperature against time taken
     plt.figure(figsize=(16, 9))
     plt.plot(temp, totaltime, color = "cyan")
-    plt.xlim(250, 330)
+    plt.xlim(t_min, t_max)
     plt.xlabel("Temperature (K)")
     plt.ylabel("Time taken to evaporate completely (s)")
     plt.savefig("Q1E.png", dpi=1200)
