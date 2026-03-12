@@ -96,103 +96,286 @@ for i in range(nsteps-1):
     
 # plot supersaturation
 plt.figure()
-plt.plot(z, S)
-plt.xlabel("Height (m)")
-plt.ylabel("Supersaturation (fraction)")
-plt.title("Supersaturation Evolution with Height")
+plt.plot(S, z)
+plt.ylabel("Height (m)")
+plt.xlabel("Supersaturation, s")
+plt.title("Evolution of Supersaturation in rising parcel", size=12)
 plt.grid()
 plt.show()
 
 
 # plot droplet radius
 plt.figure()
-plt.plot(z, r * 1e6)  # convert meters to microns
-plt.xlabel("Height (m)")
-plt.ylabel("Droplet Radius (microns)")
-plt.title("Droplet Growth with Height")
+plt.plot(r * 1e6, z)  # convert meters to microns
+plt.ylabel("Height (m)")
+plt.xlabel("Droplet Radius (µm)")
+plt.title("Evolution of Droplet Radius in rising parcel",size=12)
 plt.grid()
 plt.show()
 
+# ------------------------------------------------------------------- # 
+# Q2b # 
+# ------------------------------------------------------------------- #
 
-zr = np.zeros(nsteps) # height 
-Sr = np.zeros(nsteps) # supersaturation
-rr = np.zeros(nsteps) # droplet radius 
+# Defining parameters 
+Dz = [0.1, 2.0] # height step (m)
+z_top = 2000 # cloud top (m)
 
-# initial values 
-Sr[0] = 0.001 # initial supersaturation (0.1%)
-rr[0] = 1e-6 # initial droplet size (1 micron) 
+plt.figure(figsize=(10,8))
 
-# Fourth order Runge Kutta
-for i in range(nsteps-1):
-    zr[i+1]=zr[i]+dz
+for j,dz in enumerate(Dz):
+    dt = dz/W # find time step
+    nsteps = int(z_top/dz)
 
-    # k1
-    k1s = supersaturation(Sr[i], rr[i])
-    k1r = droplet_radius(Sr[i], rr[i])
+    z = np.zeros(nsteps) # height 
+    S = np.zeros(nsteps) # supersaturation
+    r = np.zeros(nsteps) # droplet radius 
 
-    # k2
-    S2 = Sr[i] + dt*k1s/2
-    r2 = rr[i] + dt*k1r/2
-    k2s = supersaturation(S2, r2)
-    k2r = droplet_radius(S2, r2)
-
-    # k3
-    S3 = Sr[i] + dt*k2s/2
-    r3 = rr[i] + dt*k2r/2
-    k3s = supersaturation(S3, r3)
-    k3r = droplet_radius(S3, r3)
-
-    # k4
-    S4 = Sr[i] + dt*k3s
-    r4 = rr[i] + dt*k3r
-    k4s = supersaturation(S4, r4)
-    k4r = droplet_radius(S4, r4)
-
-    # update S and r 
-    Sr[i+1] = Sr[i] + (dt/6)*(k1s + 2*k2s + 2*k3s + k4s)
-    rr[i+1] = rr[i] + (dt/6)*(k1r + 2*k2r + 2*k3r + k4r)
+    # initial values 
+    S[0] = 0.001 # initial supersaturation (0.1%)
+    r[0] = 1e-6 # initial droplet size (1 micron) 
 
 
-# plotting forward euler vs Rk4 supersaturation
-plt.figure(figsize=(8, 7))
-# plotting forward euler supersaturation
-plt.subplot(2,1,1)
-plt.plot(z, S, color='blue', label='forward euler')
-plt.title("Supersaturation Evolution with height", fontsize='14')
-plt.xlabel("Height (m)")
-plt.ylabel("Supersaturation (fraction)")
-plt.grid()
-plt.legend(loc='upper right')
+    # Forward Euler timestepping scheme 
+    for i in range(nsteps-1):
+        z[i+1]=z[i]+dz
+        S[i+1]=S[i]+supersaturation(S[i], r[i])*dt
+        r[i+1]=r[i]+droplet_radius(S[i], r[i])*dt
+    
 
-# plotting rk4 supersaturation
-plt.subplot(2,1,2)
-plt.plot(zr, Sr, color='red', label='Rk4')
-plt.xlabel("Height (m)")
-plt.ylabel("Supersaturation (fraction)")
-plt.grid()
-plt.legend(loc='upper right')
+    zr = np.zeros(nsteps) # height 
+    Sr = np.zeros(nsteps) # supersaturation
+    rr = np.zeros(nsteps) # droplet radius 
 
-plt.subplots_adjust(hspace=0.3)
+    # initial values 
+    Sr[0] = 0.001 # initial supersaturation (0.1%)
+    rr[0] = 1e-6 # initial droplet size (1 micron) 
+
+    # Fourth order Runge Kutta
+    for i in range(nsteps-1):
+        zr[i+1]=zr[i]+dz
+
+        # k1
+        k1s = supersaturation(Sr[i], rr[i])
+        k1r = droplet_radius(Sr[i], rr[i])
+
+        # k2
+        S2 = Sr[i] + dt*k1s/2
+        r2 = rr[i] + dt*k1r/2
+        k2s = supersaturation(S2, r2)
+        k2r = droplet_radius(S2, r2)
+
+        # k3
+        S3 = Sr[i] + dt*k2s/2
+        r3 = rr[i] + dt*k2r/2
+        k3s = supersaturation(S3, r3)
+        k3r = droplet_radius(S3, r3)
+
+        # k4
+        S4 = Sr[i] + dt*k3s
+        r4 = rr[i] + dt*k3r
+        k4s = supersaturation(S4, r4)
+        k4r = droplet_radius(S4, r4)
+
+        # update S and r 
+        Sr[i+1] = Sr[i] + (dt/6)*(k1s + 2*k2s + 2*k3s + k4s)
+        rr[i+1] = rr[i] + (dt/6)*(k1r + 2*k2r + 2*k3r + k4r)
+
+
+    # plotting forward euler vs Rk4 supersaturation
+    # plotting forward euler supersaturation
+    plt.subplot(2,2,2*j+1)
+    plt.plot(S, z, color='blue')
+    plt.title(f"Forward Euler (dz={dz})", size = 14)
+    plt.ylabel("Height (m)")
+    plt.xlabel("Supersaturation (fraction)")
+    plt.xlim(0.0008,0.0065)
+    plt.grid()
+
+    # plotting rk4 supersaturation
+    plt.subplot(2,2,2*j+2)
+    plt.plot(Sr, zr, color='red')
+    plt.title(f"Runge Kutta 4 (dz={dz})", size = 14)
+    plt.ylabel("Height (m)")
+    plt.xlabel("Supersaturation (fraction)")
+    plt.xlim(0.0008,0.0065)
+    plt.grid()
+
+
+plt.tight_layout()
 plt.show()
 
-# plotting forward euler vs rk4 droplet growth 
-plt.figure(figsize=(8, 7))
-# plotting forward euler droplet growth 
-plt.subplot(2,1,1)
-plt.plot(z, r, color='blue', label='forward euler')
-plt.title("Droplet Growth with Height", fontsize='14')
-plt.xlabel("Height (m)")
-plt.ylabel("Droplet Radius (microns)")
-plt.grid()
-plt.legend(loc='upper left')
 
-# plotting rk4 droplet growth 
-plt.subplot(2,1,2)
-plt.plot(zr, rr, color='red', label='Rk4')
-plt.xlabel("Height (m)")
-plt.ylabel("Droplet Radius (microns)")
-plt.grid()
-plt.legend(loc='upper left')
 
-plt.subplots_adjust(hspace=0.3)
+plt.figure(figsize=(10,8))
+
+for j,dz in enumerate(Dz):
+    dt = dz/W # find time step
+    nsteps = int(z_top/dz)
+
+    z = np.zeros(nsteps) # height 
+    S = np.zeros(nsteps) # supersaturation
+    r = np.zeros(nsteps) # droplet radius 
+
+    # initial values 
+    S[0] = 0.001 # initial supersaturation (0.1%)
+    r[0] = 1e-6 # initial droplet size (1 micron) 
+
+
+    # Forward Euler timestepping scheme 
+    for i in range(nsteps-1):
+        z[i+1]=z[i]+dz
+        S[i+1]=S[i]+supersaturation(S[i], r[i])*dt
+        r[i+1]=r[i]+droplet_radius(S[i], r[i])*dt
+    
+
+    zr = np.zeros(nsteps) # height 
+    Sr = np.zeros(nsteps) # supersaturation
+    rr = np.zeros(nsteps) # droplet radius 
+
+    # initial values 
+    Sr[0] = 0.001 # initial supersaturation (0.1%)
+    rr[0] = 1e-6 # initial droplet size (1 micron) 
+
+    # Fourth order Runge Kutta
+    for i in range(nsteps-1):
+        zr[i+1]=zr[i]+dz
+
+        # k1
+        k1s = supersaturation(Sr[i], rr[i])
+        k1r = droplet_radius(Sr[i], rr[i])
+
+        # k2
+        S2 = Sr[i] + dt*k1s/2
+        r2 = rr[i] + dt*k1r/2
+        k2s = supersaturation(S2, r2)
+        k2r = droplet_radius(S2, r2)
+
+        # k3
+        S3 = Sr[i] + dt*k2s/2
+        r3 = rr[i] + dt*k2r/2
+        k3s = supersaturation(S3, r3)
+        k3r = droplet_radius(S3, r3)
+
+        # k4
+        S4 = Sr[i] + dt*k3s
+        r4 = rr[i] + dt*k3r
+        k4s = supersaturation(S4, r4)
+        k4r = droplet_radius(S4, r4)
+
+        # update S and r 
+        Sr[i+1] = Sr[i] + (dt/6)*(k1s + 2*k2s + 2*k3s + k4s)
+        rr[i+1] = rr[i] + (dt/6)*(k1r + 2*k2r + 2*k3r + k4r)
+
+
+    # plotting forward euler vs rk4 droplet growth 
+    # plotting forward euler droplet growth 
+    plt.subplot(2,2,2*j+1)
+    plt.plot(r, z, color='blue')
+    plt.title(f"Forward Euler (dz={dz})", size = 14)
+    plt.ylabel("Height (m)")
+    plt.xlabel("Droplet Radius (microns)")
+    plt.grid()
+
+    # plotting rk4 droplet growth 
+    plt.subplot(2,2,2*j+2)
+    plt.plot(rr, zr, color='red')
+    plt.title(f"Runge Kutta 4 (dz={dz})", size = 14)
+    plt.ylabel("Height (m)")
+    plt.xlabel("Droplet Radius (microns)")
+    plt.grid()
+
+
+plt.tight_layout()
 plt.show()
+
+
+
+
+# ------------------------------------------------------------------- #
+# Accuracy test: compare maximum supersaturation for different timesteps
+# ------------------------------------------------------------------- #
+
+dz_values = [2.0, 1.0, 0.5, 0.2, 0.1, 0.01]   # different vertical steps
+
+euler_max = []
+rk4_max = []
+difference = []
+
+for dz_test in dz_values:
+
+    dt_test = dz_test / W
+    nsteps_test = int(z_top / dz_test)
+
+    # ---------------- Euler ----------------
+    S_test = np.zeros(nsteps_test)
+    r_test = np.zeros(nsteps_test)
+
+    S_test[0] = 0.001
+    r_test[0] = 1e-6
+
+    for i in range(nsteps_test-1):
+        S_test[i+1] = S_test[i] + supersaturation(S_test[i], r_test[i]) * dt_test
+        r_test[i+1] = r_test[i] + droplet_radius(S_test[i], r_test[i]) * dt_test
+
+    Smax_euler = np.max(S_test)
+
+    # ---------------- RK4 ----------------
+    Sr_test = np.zeros(nsteps_test)
+    rr_test = np.zeros(nsteps_test)
+
+    Sr_test[0] = 0.001
+    rr_test[0] = 1e-6
+
+    for i in range(nsteps_test-1):
+
+        k1s = supersaturation(Sr_test[i], rr_test[i])
+        k1r = droplet_radius(Sr_test[i], rr_test[i])
+
+        S2 = Sr_test[i] + dt_test*k1s/2
+        r2 = rr_test[i] + dt_test*k1r/2
+        k2s = supersaturation(S2, r2)
+        k2r = droplet_radius(S2, r2)
+
+        S3 = Sr_test[i] + dt_test*k2s/2
+        r3 = rr_test[i] + dt_test*k2r/2
+        k3s = supersaturation(S3, r3)
+        k3r = droplet_radius(S3, r3)
+
+        S4 = Sr_test[i] + dt_test*k3s
+        r4 = rr_test[i] + dt_test*k3r
+        k4s = supersaturation(S4, r4)
+        k4r = droplet_radius(S4, r4)
+
+        Sr_test[i+1] = Sr_test[i] + (dt_test/6)*(k1s + 2*k2s + 2*k3s + k4s)
+        rr_test[i+1] = rr_test[i] + (dt_test/6)*(k1r + 2*k2r + 2*k3r + k4r)
+
+    Smax_rk4 = np.max(Sr_test)
+
+    # store results
+    euler_max.append(Smax_euler)
+    rk4_max.append(Smax_rk4)
+    difference.append(abs(Smax_euler - Smax_rk4))
+
+
+# convert to %
+euler_max = np.array(euler_max) * 100
+rk4_max = np.array(rk4_max) * 100
+difference = np.array(difference) * 100
+
+
+# ---------------------------------------------------
+# Maximum supersaturation vs timestep
+# ---------------------------------------------------
+
+plt.figure()
+plt.plot(dz_values, euler_max, marker='o', label="Forward Euler", color = 'blue')
+plt.plot(dz_values, rk4_max, marker='o', label="RK4", color = 'red')
+
+plt.xlabel("Height Step dz (m)")
+plt.ylabel("Maximum Supersaturation (%)")
+plt.title("Maximum Supersaturation vs Model Timestep")
+plt.legend()
+plt.grid()
+plt.show()
+
