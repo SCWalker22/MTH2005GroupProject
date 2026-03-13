@@ -100,7 +100,7 @@ def terminal_velocity(r: float, rho: float) -> float:
 
 
 #### initial conditions:
-init_size_range = np.arange(1e-7, 1e-5,1e-7)
+init_size_range = np.arange(1e-9, 1e-7,1e-9)
 threshold = 1e-9 ### threshold value for our radius to be less than
 dt = 0.1
 dist_list = []
@@ -109,22 +109,23 @@ s = 0.7
 
 for radius in init_size_range:
     r = radius
-    distance = 0
+    distance = max_height
     v = 0
-    temp = 283 # kelvin, temp 
-    press = 100000# hPa, PRESSURE
-    while r > threshold and distance < max_height:
+    temp = T # kelvin, temp 
+    press = p# hPa, PRESSURE
+    while r > threshold and distance > 0:
         mass: float = Rho_w*pi*r**3
         force: float = down_force(r) - drag(v, r, Rho_a)
         accel = force/mass
         v += dt*accel
-        distance += -dt*v
+        distance -= dt*v
         # Iterate drop size
+        # print(dr_dt(s, r, temp, press))
         r += dt*dr_dt(s, r, temp, press)
 
         temp += dt*dT_dt(s, r, temp, press)
         press += dt*dP_dt(s, r, temp, press)
-        
+    print(f"{radius=}, {r=}, {distance=}")
     dist_list.append(distance)
 
 ## radius size is x, dis_list is y
