@@ -101,7 +101,7 @@ def terminal_velocity(r: float, rho: float) -> float:
 
 #### initial conditions:
 # init_size_range = np.arange(1e-5, 5e-3,1e-5)
-init_size_range = np.arange(1e-7, 1e-3,1e-7)
+init_size_range = np.arange(1e-7, 5e-3,1e-7)
 threshold = 1e-5 ### threshold value for our radius to be less than
 dt = 0.01
 dist_list = []
@@ -126,7 +126,7 @@ for radius in init_size_range:
 
         temp += dt*dT_dt(s, r, temp, press)
         press += dt*dP_dt(s, r, temp, press)
-    # print(f"{radius=}, {r=}, {distance=}")
+    print(f"{radius=}, {r=}, {distance=}")
     dist_list.append(distance)
 
 ## radius size is x, dis_list is y
@@ -138,4 +138,5 @@ plt.plot(init_size_range, dist_list)
 plt.title("Height above ground where droplet 'disappears' (by evaporation)")
 plt.xlabel("Droplet size (m)")
 plt.ylabel("Height above ground (m)")
+plt.savefig("Ext3.png", dpi = 1200)
 plt.show()
