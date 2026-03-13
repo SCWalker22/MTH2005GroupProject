@@ -100,9 +100,10 @@ def terminal_velocity(r: float, rho: float) -> float:
 
 
 #### initial conditions:
-init_size_range = np.arange(1e-9, 1e-7,1e-9)
-threshold = 1e-9 ### threshold value for our radius to be less than
-dt = 0.1
+# init_size_range = np.arange(1e-5, 5e-3,1e-5)
+init_size_range = np.arange(1e-7, 1e-3,1e-7)
+threshold = 1e-5 ### threshold value for our radius to be less than
+dt = 0.01
 dist_list = []
 max_height = 500
 s = 0.7
@@ -113,7 +114,7 @@ for radius in init_size_range:
     v = 0
     temp = T # kelvin, temp 
     press = p# hPa, PRESSURE
-    while r > threshold and distance > 0:
+    while r > threshold and distance >= 0:
         mass: float = Rho_w*pi*r**3
         force: float = down_force(r) - drag(v, r, Rho_a)
         accel = force/mass
@@ -121,53 +122,20 @@ for radius in init_size_range:
         distance -= dt*v
         # Iterate drop size
         # print(dr_dt(s, r, temp, press))
-        r += dt*dr_dt(s, r, temp, press)
+        r -= dt*dr_dt(s, r, temp, press)
 
         temp += dt*dT_dt(s, r, temp, press)
         press += dt*dP_dt(s, r, temp, press)
-    print(f"{radius=}, {r=}, {distance=}")
+    # print(f"{radius=}, {r=}, {distance=}")
     dist_list.append(distance)
 
 ## radius size is x, dis_list is y
 
 #### plotting graph:
 
+plt.figure(figsize=(16,9))
 plt.plot(init_size_range, dist_list)
+plt.title("Height above ground where droplet 'disappears' (by evaporation)")
+plt.xlabel("Droplet size (m)")
+plt.ylabel("Height above ground (m)")
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
