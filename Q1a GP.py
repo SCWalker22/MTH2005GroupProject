@@ -90,12 +90,15 @@ for n in range(N-1):
     k4 = dr(t[n] + dt, R_Rk4[n] + dt*k3)
     R_Rk4[n+1] = R_Rk4[n] + (dt/6)*(k1 + 2*k2 + 2*k3 + k4)
 
-# Taking every 400th value of Rk4 to make graph easier to see
+# Taking every 400th value of forward euler and 
+# Rk4 to make graphs easier to see (need this for forward euler later)
+R_Euler0 = R_Euler[0::400]
 R_Rk40 = R_Rk4[0::400]
 Tt = t[0::400]
 
 r_euler_um = R_Euler * 1e6
 r_rk4_um = R_Rk40 * 1e6
+r_euler0_um = R_Euler0 * 1e6
 
 plt.figure(figsize=(8,6))
 plt.plot(t/60, r_euler_um, label="Forward Euler", color = 'blue')
@@ -103,6 +106,20 @@ plt.plot(Tt/60, r_rk4_um, '.', label="RK4", color = 'red', markersize=5)
 plt.xlabel("Time (minutes)")
 plt.ylabel("Droplet Radius (μm)")
 plt.title("Cloud Droplet Growth (T=283K, s=0.30%)")
+plt.legend()
+plt.grid()
+plt.show()
+
+# analytic solution (in microns)
+r_true = np.sqrt(2*A3*s*t + 1e-12) *1e6
+
+# plotting forward euler and analytic solution together to show accuracy
+plt.figure(figsize=(8,6))
+plt.plot(t/60, r_true, label="Analytic Solution", color = 'black')
+plt.plot(Tt/60, r_euler0_um, '.', label="Forward Euler", color = 'blue', markersize = 5)
+plt.title("Forward Euler with Analytical Solution")
+plt.xlabel("Time (minutes)")
+plt.ylabel("Droplet Radius (μm)")
 plt.legend()
 plt.grid()
 plt.show()
