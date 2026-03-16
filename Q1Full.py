@@ -74,6 +74,16 @@ def drdt(
     """
     return A3*s/r
 
+def true_soln(
+        A3: float,
+        s: float,
+        t: float
+    ) -> float:
+    """
+    
+    """
+    return np.sqrt(2*A3*s*t + 1e-12) * 1e6
+
 def forw_euler(
     r: float,
     A_3: float,
@@ -99,7 +109,7 @@ def forw_euler(
         prev_r = r_vals[-1]
         r_vals.append(prev_r + t_step*drdt(A_3, s, prev_r)) # Calculate next drop size using forward Euler
         t += t_step
-    return r_vals
+    return np.array(r_vals)
 
 def runge_kutta(
     r: float,
@@ -131,7 +141,7 @@ def runge_kutta(
         k_4 = drdt(A_3, s, prev_r + t_step*k_3)
         r_vals.append(prev_r + t_step*(1/6)*(k_1 + 2*k_2 + 2*k_3 + k_4)) # Append next drop size as found by Runge-Kutta
         t += t_step
-    return r_vals
+    return np.array(r_vals)
 
 def part_a():
     """
@@ -144,15 +154,39 @@ def part_a():
     # Runge-Kutta
     r_rk4 = runge_kutta(init_size, A_3, t_step, t_end=t_end)
 
+    r_euler0 = r_euler[0::40000]
+    r_rk40 = r_rk4[0::40000]
+    t_vals0 = t_vals[0::40000]
+
+    r_euler_um = r_euler * 1e6
+    r_rk4_um = r_rk40 * 1e6
+    r_euler0_um = r_euler0 * 1e6
+
     plt.figure(figsize=(16,9))
-    plt.plot(t_vals/60, r_euler, label="Forward Euler")
-    plt.plot(t_vals/60, r_rk4, ':', label="RK4", color = 'red')
+    plt.plot(t_vals/60, r_euler_um, label="Forward Euler", color="blue")
+    plt.plot(t_vals0/60, r_rk4_um, '.', label="RK4", color = 'red', markersize=5)
     plt.xlabel("Time (minutes)")
     plt.ylabel("Droplet Radius (μm)")
     plt.title("Cloud Droplet Growth (T=283K, s=0.30%)")
     plt.legend()
     plt.grid()
     plt.savefig("Q1A.png", dpi=1200)
+    plt.show()
+
+    # Part b
+    # plotting forward euler and analytic solution together to show accuracy
+
+    r_true = true_soln(A_3, s, t_vals)
+
+    plt.figure(figsize=(16, 9))
+    plt.plot(t_vals/60, r_true, label="Analytic Solution", color = 'blue')
+    plt.plot(t_vals0/60, r_euler0_um, '.', label="Forward Euler", color = 'red', markersize = 5)
+    plt.title("Forward Euler with Analytical Solution")
+    plt.xlabel("Time (minutes)")
+    plt.ylabel("Droplet Radius (μm)")
+    plt.legend()
+    plt.grid()
+    plt.savefig("Q1b.png", dpi=1200)
     plt.show()
 
 def graph_slices(
