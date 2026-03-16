@@ -85,23 +85,41 @@ def drag(
     area: float = pi*r**2
     return 0.5*rho*(v**2)*area*0.5
 
-def terminal_velocity(r: float, rho: float) -> float:
+def manual_terminal_velocity(r: float, rho: float) -> float:
+    """
+    
+    """
     dt = 0.01
     t_end = 1
     t: float = 0
     v: float = 0
+    mass: float = Rho_w*pi*r**3
     while t < t_end:
-        mass: float = Rho_w*pi*r**3
         force: float = down_force(r) - drag(v, r, rho)
         accel = force/mass
         v += dt*accel
         t += dt
     return v
 
-def falling_droplet(size_range, dt: float = 0.01) -> tuple[list[float | int], list[float | int]]:
+def terminal_velocity(r: float) -> float:
     """
+    
+    """
+    k_1 = 1.19e6
+    k_2 = 8e3
+    k_3 = 2.01e3
+    if r < 30e-6:
+        return k_1*r**2
+    if r >= 40e-6 and r < 6e-4:
+        return k_2*r
+    if r >= 6e-4 and r < 2e-3:
+        return k_3*np.sqrt(r)
+    return 1
+
+def falling_droplet(size_range, velocity_method: str, dt: float = 0.01) -> tuple[list[float | int], list[float | int]]:
     """
 
+    """
     #### initial conditions:
     # init_size_range = np.arange(1e-5, 5e-3,1e-5)
     threshold = 1e-7 ### threshold value for our radius to be less than
@@ -118,10 +136,13 @@ def falling_droplet(size_range, dt: float = 0.01) -> tuple[list[float | int], li
         temp = T # kelvin, temp 
         press = p# hPa, PRESSURE
         while r > threshold and distance >= 0:
-            mass: float = Rho_w*pi*r**3
-            force: float = down_force(r) - drag(v, r, Rho_a)
-            accel: float = force/mass
-            v += dt*accel
+            if velocity_method.upper() == "M":
+                mass: float = (4/3)*Rho_w*pi*r**3
+                force: float = down_force(r) - drag(v, r, Rho_a)
+                accel: float = force/mass
+                v += dt*accel
+            else: # Use given velocity method
+                v = terminal_velocity(r)
             distance -= dt*v
             # Iterate drop size
             # print(dr_dt(s, r, temp, press))
@@ -141,7 +162,8 @@ def plot_graph(
     graph_name: str,
     x_label: str = "Droplet size (m)",
     y_label: str = "Height above ground (m)",
-    y_lim: None | tuple[int, int] = None
+    y_lim: None | tuple[int, int] = None,
+    y_2: None | list[float] = None
 
     ):
     """
@@ -155,13 +177,17 @@ def plot_graph(
         x_label: Label for x axis, defaults to: Droplet size (m)
         y_label: Label for y axis, defaults to: Height above ground (m)
         y_lim: Limit for y axis in form (y_min, y_max): Defaults to no limit (None)
+        y_2: 2nd Set of y values to plot optionally
 
     Returns:
         None
     """
     plt.figure(figsize=(16,9))
     plt.grid()
-    plt.plot(x, y)
+    plt.plot(x, y, label="Manual Terminal Velocity")
+    if y_2 is not None:
+        plt.plot(x, y_2, label="Given Terminal Velocity")
+        plt.legend()
     plt.title(title)
     plt.xlabel(x_label)
     plt.ylabel(y_label)
@@ -170,23 +196,55 @@ def plot_graph(
     plt.savefig(f"Ext3{graph_name}.png", dpi=1200)
     plt.show()
 
-if __name__ == "__main__":
+def main():
+    velocity_method = input("Would you like to use the given method for terminal velocity, or our manually calculated one? Please enter G or M respectively: ")
+    while velocity_method.upper() not in ["G", "M"]:
+        velocity_method = input("Would you like to use the given method for terminal velocity, or our manually calculated one? Please enter G or M respectively: ")
     # Plotting graphs for different size droplets, classified (roughly) into different groups, can clean this up and find actual size ranges
     size_range = np.arange(1e-7, 1e-4,1e-7)
-    dist_list, _ = falling_droplet(size_range, dt = 0.001)
-    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig1")
+    dist_list, _ = falling_droplet(size_range, velocity_method, dt = 0.001)
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig1")
     
     size_range = np.arange(1e-5, 3e-3,1e-5)
-    dist_list, _ = falling_droplet(size_range, dt = 0.1)
-    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig2", y_lim=(0, 500))
+    dist_list, _ = falling_droplet(size_range, velocity_method, dt = 0.1)
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig2", y_lim=(0, 500))
 
     size_range = np.arange(1e-3, 1e-1, 1e-3)
-    dist_list, final_sizes = falling_droplet(size_range, dt = 0.1)
-    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig3", y_lim=(0, 500))
-    plot_graph(size_range, final_sizes, "Final Droplet radius as droplet evaporates whilst falling", "Fig4", y_label = "Final Droplet Radius (m)")
+    dist_list, final_sizes = falling_droplet(size_range, velocity_method, dt = 0.1)
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig3", y_lim=(0, 500))
+    plot_graph(size_range, final_sizes, f"Final Droplet radius as droplet evaporates whilst falling {velocity_method}", "Fig4", y_label = "Final Droplet Radius (m)")
 
     size_range = np.arange(1e-2, 1, 1e-2)
-    dist_list, final_sizes = falling_droplet(size_range, dt = 0.1)
-    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig5", y_lim=(0, 500))
-    plot_graph(size_range, final_sizes, "Final Droplet radius as droplet evaporates whilst falling", "Fig6", y_label = "Final Droplet Radius (m)")
+    dist_list, final_sizes = falling_droplet(size_range, velocity_method, dt = 0.1)
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig5", y_lim=(0, 500))
+    plot_graph(size_range, final_sizes, f"Final Droplet radius as droplet evaporates whilst falling {velocity_method}", "Fig6", y_label = "Final Droplet Radius (m)")
     # Could plot percentage size of initial size???
+
+def multi_plot():
+    # Plotting graphs for different size droplets, classified (roughly) into different groups, can clean this up and find actual size ranges
+    size_range = np.arange(1e-7, 1e-4,1e-7)
+    dist_list, _ = falling_droplet(size_range, "M", dt = 0.001)
+    dist_list_2, _ = falling_droplet(size_range, "G", dt = 0.01)
+    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig1Multi", y_2 = dist_list_2)
+    
+    size_range = np.arange(1e-5, 3e-3,1e-5)
+    dist_list, _ = falling_droplet(size_range, "M", dt = 0.1)
+    dist_list_2, _ = falling_droplet(size_range, "G", dt = 0.1)
+    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig2Multi", y_lim=(0, 500), y_2 = dist_list_2)
+
+    size_range = np.arange(1e-3, 1e-1, 1e-3)
+    dist_list, final_sizes = falling_droplet(size_range, "M", dt = 0.1)
+    dist_list_2, final_sizes_2 = falling_droplet(size_range, "G", dt = 0.1)
+    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig3Multi", y_lim=(0, 500), y_2 = dist_list_2)
+    plot_graph(size_range, final_sizes, "Final Droplet radius as droplet evaporates whilst falling", "Fig4Multi", y_label = "Final Droplet Radius (m)", y_2 = final_sizes_2)
+
+    size_range = np.arange(1e-2, 1, 1e-2)
+    dist_list, final_sizes = falling_droplet(size_range, "M", dt = 0.1)
+    dist_list_2, final_sizes_2 = falling_droplet(size_range, "G", dt = 0.01)
+    plot_graph(size_range, dist_list, "Height above ground where droplet 'disappears' (by evaporation)", "Fig5Multi", y_lim=(0, 500), y_2 = dist_list_2)
+    plot_graph(size_range, final_sizes, "Final Droplet radius as droplet evaporates whilst falling", "Fig6Multi", y_label = "Final Droplet Radius (m)", y_2 = final_sizes_2)
+    # Could plot percentage size of initial size???
+
+if __name__ == "__main__":
+    main()
+    multi_plot()

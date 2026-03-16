@@ -247,7 +247,7 @@ def graph_slices(
     plt.ylabel("Final size of drop (m)")
     print(f"{len(x)=}, {len(final_sizes)=}")
     plt.plot(x, final_sizes)
-    plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}")
+    plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}.png", dpi=1200)
     plt.show()
 
 def part_c():
@@ -348,7 +348,7 @@ def part_e():
 
 if __name__ == "__main__":
     part_a()
-    # No code needed for part b
+    # NPart b code inclueded in part_a
     part_c()
     part_d()
     part_e()
