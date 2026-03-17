@@ -247,7 +247,7 @@ def graph_slices(
     plt.ylabel("Final size of drop (m)")
     print(f"{len(x)=}, {len(final_sizes)=}")
     plt.plot(x, final_sizes)
-    plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}.png", dpi=1200)
+    plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}.png", dpi=1200) 
     plt.show()
 
 def part_c():
