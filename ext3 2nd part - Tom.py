@@ -81,20 +81,36 @@ def drag(
 
     ) -> float:
     """
+    Calculate the force of Drag on a droplet of given radius (assuming a spherical droplet)
+
+    Args:
+        v: Velocity of droplet
+        r: Radius of droplet
+        rho: Air pressure
+
+    Returns:
+        D: Force of drag
     """
     area: float = pi*r**2
     return 0.5*rho*(v**2)*area*0.5
 
 def manual_terminal_velocity(r: float, rho: float) -> float:
     """
-    
+    Calculate terminal velocity of a droplet of given size falling
+
+    Args:
+        r: Radius of droplet
+        rho: Air pressure
+
+    Returns:
+        v: Droplet terminal velocity
     """
     dt = 0.01
     t_end = 1
     t: float = 0
     v: float = 0
     mass: float = Rho_w*pi*r**3
-    while t < t_end:
+    while t < t_end: # Timestep over a small range to find when droplet stops accelerating - ie at terminal velocity
         force: float = down_force(r) - drag(v, r, rho)
         accel = force/mass
         v += dt*accel
@@ -103,7 +119,13 @@ def manual_terminal_velocity(r: float, rho: float) -> float:
 
 def terminal_velocity(r: float) -> float:
     """
-    
+    Use given formulae to calculate terminal velocity of a droplet at a given radius
+
+    Args:
+        r: Radius of drop
+
+    Returns:
+        v: Terminal velocity
     """
     k_1 = 1.19e6
     k_2 = 8e3
@@ -114,11 +136,20 @@ def terminal_velocity(r: float) -> float:
         return k_2*r
     if r >= 6e-4 and r < 2e-3:
         return k_3*np.sqrt(r)
-    return 1
+    return 1 # If droplet outside of defined range, set terminal velocity to 1
 
-def falling_droplet(size_range, velocity_method: str, dt: float = 0.01) -> tuple[list[float | int], list[float | int]]:
+def falling_droplet(size_range: list[float] | np.ndarray[float], velocity_method: str, dt: float = 0.01) -> tuple[list[float | int], list[float | int]]:
     """
+    Compute the final size and distance travelled for a range of droplet sizes falling out of a cloud
 
+    Args:
+        size_range: List type variable of a range of droplet sizes
+        velocity_method: String of which method to use to calculate terminal velocity, "M" or "G"
+        dt: Timestep, defaults to 0.01
+
+    Returns:
+        dist_list: List of distances fallen before droplet evaporates
+        final_drop_size: List of final drop size after falling for 500m (or entirely evaporating)
     """
     #### initial conditions:
     # init_size_range = np.arange(1e-5, 5e-3,1e-5)
@@ -129,6 +160,7 @@ def falling_droplet(size_range, velocity_method: str, dt: float = 0.01) -> tuple
     max_height = 500
     s = 0.7
 
+    # Loop through each drop size
     for radius in size_range:
         r = radius
         distance: float = max_height
@@ -197,6 +229,9 @@ def plot_graph(
     plt.show()
 
 def main():
+    """
+    Main function to produce graphs for Ext3 part 2
+    """
     velocity_method = input("Would you like to use the given method for terminal velocity, or our manually calculated one? Please enter G or M respectively: ")
     while velocity_method.upper() not in ["G", "M"]:
         velocity_method = input("Would you like to use the given method for terminal velocity, or our manually calculated one? Please enter G or M respectively: ")
@@ -221,6 +256,9 @@ def main():
     # Could plot percentage size of initial size???
 
 def multi_plot():
+    """
+    Plot the difference between the 2 methods of calculating terminal velocity
+    """
     # Plotting graphs for different size droplets, classified (roughly) into different groups, can clean this up and find actual size ranges
     size_range = np.arange(1e-7, 1e-4,1e-7)
     dist_list, _ = falling_droplet(size_range, "M", dt = 0.001)

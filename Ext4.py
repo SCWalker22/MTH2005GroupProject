@@ -73,56 +73,95 @@ def terminal_velocity(r: float) -> float:
         return k_3*np.sqrt(r)
     return 1
 
-def down_force(r: float) -> float:
-    """
-    Calculate downwards force on a droplet
+# def down_force(r: float) -> float:
+#     """
+#     Calculate downwards force on a droplet
 
-    Args:
-        r: Radius
+#     Args:
+#         r: Radius
 
-    Returns:
-        Downwards force (N)
-    """
-    mass: float = Rho_w*pi*r**3
-    return mass*g
+#     Returns:
+#         Downwards force (N)
+#     """
+#     mass: float = Rho_w*pi*r**3
+#     return mass*g
 
-def drag(
-    v: float,
-    r: float,
-    rho: float
+# def drag(
+#     v: float,
+#     r: float,
+#     rho: float
+
+#     ) -> float:
+#     """
+#     """
+#     area: float = pi*r**2
+#     return 0.5*rho*(v**2)*area*0.5
+
+# def manual_termianl_velocity(r: float) -> float:
+#     """
+    
+#     """
+#     t = 0
+#     dt = 0.01
+#     t_end = 1
+#     v = 0
+#     mass = (4/3)*Rho_w*pi*r**3
+#     while t < t_end:
+#         force = down_force(r) - drag(v, r, Rho_a)
+#         accel = force/mass
+#         v += dt*accel
+#         t += dt
+#     return v
+
+
+# drop_size = np.arange(1e-6, 2e-3, 1e-6)
+# vels = []
+# vels_manual = []
+# for drop in drop_size:
+#     v = terminal_velocity(drop)
+#     vels.append(v)
+#     vels_manual.append(manual_termianl_velodity(drop))
+# plt.plot(drop_size, vels, label="lecturer")
+# plt.plot(drop_size, vels_manual, label = "mine")
+# plt.grid()
+# plt.legend()
+# plt.show()
+
+def droplet_growth(
+    r_current: float,
+    r_surrounding: float,
+    freq_surrounding: float,
 
     ) -> float:
     """
+    Created a function to calculate the change in drop size due to collision with other drops
     """
-    area: float = pi*r**2
-    return 0.5*rho*(v**2)*area*0.5
+    y = 0 # How to calculate horizontal distance
+    e = (y**2)/((r_current - r_surrounding)**2)
+    pass
 
-def manual_termianl_velodity(r: float) -> float:
+def main():
     """
-    
+    Main function for Ext4
     """
+    droplet_frequency_cm: int = 200 # cm^-3
+    droplet_frequency: float = droplet_frequency_cm/(100**3)
+    initial_droplet_sizes = np.arange(1e-7, 1e-3, 1e-6) # Are these reasonable sizes???
     t = 0
     dt = 0.01
-    t_end = 1
-    v = 0
-    mass = (4/3)*Rho_w*pi*r**3
-    while t < t_end:
-        force = down_force(r) - drag(v, r, Rho_a)
-        accel = force/mass
-        v += dt*accel
-        t += dt
-    return v
+    distance = 200 # ???
+    final_radii: list[float] = []
+    for radius in initial_droplet_sizes:
+        r = radius
+        while distance > 0:
+            r += droplet_growth(r, radius, droplet_frequency) # Should we be using radius here, this is the radius of other droplets??
+            vel = terminal_velocity(r)
+            dist -= dt*vel
+        final_radii.append(r)
+    plt.figure(figsize=(16,9))
+    plt.plot(initial_droplet_sizes, final_radii, label="Final Droplet size")
+    plt.grid()
+    plt.show()
 
-
-drop_size = np.arange(1e-6, 2e-3, 1e-6)
-vels = []
-vels_manual = []
-for drop in drop_size:
-    v = terminal_velocity(drop)
-    vels.append(v)
-    vels_manual.append(manual_termianl_velodity(drop))
-plt.plot(drop_size, vels, label="lecturer")
-plt.plot(drop_size, vels_manual, label = "mine")
-plt.grid()
-plt.legend()
-plt.show()
+if __name__ == "__main__":
+    main()

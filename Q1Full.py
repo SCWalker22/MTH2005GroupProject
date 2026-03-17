@@ -64,6 +64,7 @@ def drdt(
     ) -> float:
     """
     Function to calculate drdt (change in radius at a specific time)
+
     Args:
         A3: Thermodynamic Factor (float)
         s: Supersaturation ratio
@@ -80,7 +81,15 @@ def true_soln(
         t: float
     ) -> float:
     """
-    
+    Analytical solution for droplet growth ODE
+
+    Args:
+        A3: Thermodynamic Factor
+        s: Supersaturation Ratio
+        t: time
+
+    Returns:
+        r(t): Droplet radius at a given time
     """
     return np.sqrt(2*A3*s*t + 1e-12) * 1e6
 
@@ -145,6 +154,7 @@ def runge_kutta(
 
 def part_a():
     """
+    Code to compute Q1 Part A
     """
     t_vals = np.arange(0, t_end+t_step, t_step)
     A_3: float = A_fn(Lv, Rho_w, k, Rv, T, Kv)
@@ -202,6 +212,7 @@ def graph_slices(
         num_steps: (Option) Number of computation steps on x-axis (number of points)
         t_step: (Optional) Time delta between iteration steps
     """
+    # Ask for user input of what graph to create
     temp_or_size: str = input("Would you like to vary temperature or size? (T, r): ")
     while temp_or_size.lower() not in ["t", "r", "exit", "quit", "q", ""]:
         temp_or_size: str = input("Would you like to vary temperature or size? (T, r): ")
@@ -211,7 +222,9 @@ def graph_slices(
         return None
 
     final_sizes: list[float] = []
+    # User has chosen to vary temperature
     if temp_or_size == "T":
+        # Ask for further input of what values/ranges
         graph_title: str = f"Plot of changing temperature on growth of rain drop after {t_end/60} minutes"
         x_axis_label: str = "Temperature (K)"
         min_temp: int = int(input("Enter minimum temperature (K): "))
@@ -220,13 +233,15 @@ def graph_slices(
         other_val = init_size
         temperatures = np.linspace(min_temp, max_temp, num_steps+1)
         x = temperatures
+        # Calculate final drop size based on input data
         for temp in temperatures:
-            print(temp)
             A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
             final_size = runge_kutta(init_size, A_3, t_step, t_end=end_time)[-1]
             final_sizes.append(final_size)
-
+    
+    # Otherwise user has chosen to vary radius
     else:
+        # Ask for further input of what values/ranges
         graph_title: str = f"Plot of changing initial radius on growth of rain drop after {t_end/60} minutes"
         x_axis_label: str = "Initial Radius (m)"
         min_radius: float = float(input("Enter minimum radius (m): "))
@@ -236,16 +251,17 @@ def graph_slices(
         radii = np.linspace(min_radius, max_radius, num_steps+1)
         x = radii
         A_3 = A_fn(Lv, Rho_w, k, Rv, temp, Kv)
+        # Calculate final drop size based on input data
         for radius in radii:
             final_size = runge_kutta(radius, A_3, t_step, t_end=end_time)[-1]
             final_sizes.append(final_size)
 
+    # Plot graph based on user inputs
     plt.figure(figsize=(16, 9))
     plt.grid()
     plt.title(graph_title)
     plt.xlabel(x_axis_label)
     plt.ylabel("Final size of drop (m)")
-    print(f"{len(x)=}, {len(final_sizes)=}")
     plt.plot(x, final_sizes)
     plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}.png", dpi=1200) 
     plt.show()
@@ -282,11 +298,13 @@ def part_c():
     plt.show()
 
     # Attempting to plot some 2D slices of graph
+    # Run this 5 times, it asks for user input, but can be skipped
     for _ in range(5):
         graph_slices()
 
 def part_d():
     """
+    Code to compute Q1d
     """
     # temperature range
     temp = np.arange(t_min, t_max, 0.1)
@@ -325,6 +343,7 @@ def part_d():
 
 def part_e():
     """
+    Code to compute Q1e
     """
     # temperature range
     temp = np.arange(t_min, t_max, 0.1)
@@ -348,7 +367,7 @@ def part_e():
 
 if __name__ == "__main__":
     part_a()
-    # NPart b code inclueded in part_a
+    # NB Part b code inclueded in part_a
     part_c()
     part_d()
     part_e()

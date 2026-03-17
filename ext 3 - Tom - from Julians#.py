@@ -1,6 +1,7 @@
 import numpy as np
 from svp import svp
 import matplotlib.pyplot as plt
+from Ext4 import droplet_growth
 
 # Constants
 
