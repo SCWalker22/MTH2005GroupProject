@@ -127,18 +127,50 @@ def terminal_velocity(r: float) -> float:
 # plt.legend()
 # plt.show()
 
+def collision_volume(
+    r_current: float,
+    r_surrounding: float,
+    v_current: float,
+    v_surrounding: float
+
+    ) -> float:
+    """
+    """
+    return pi*(r_current + r_surrounding)**2*(v_current - v_surrounding)
+
+def collection_efficiency(
+    r_current: float,
+    r_surrounding: float
+    ) -> float:
+    """
+
+    """
+    return (x0/(r_current + r_surrounding))**2
+
 def droplet_growth(
     r_current: float,
     r_surrounding: float,
     freq_surrounding: float,
+    v_current: float,
+    v_surrounding
 
     ) -> float:
     """
     Created a function to calculate the change in drop size due to collision with other drops
     """
-    y = 0 # How to calculate horizontal distance
-    e = (y**2)/((r_current - r_surrounding)**2)
-    pass
+    prob = collision_volume(r_current, r_surrounding, v_current, v_surrounding) * freq_surrounding * collection_efficiency(r_current, r_surrounding)
+    return prob
+
+def v(r: float) -> float:
+    return 4/3*pi*r**3
+
+def implicit_soln(
+    r: float,
+    r_surrounding: float,
+    freq_surrounding: float
+    ) -> float:
+    c = 1.1e4
+    step = c*v(r_surrounding)*freq_surrounding*(v(r)**2)
 
 def main():
     """
@@ -147,6 +179,7 @@ def main():
     droplet_frequency_cm: int = 200 # cm^-3
     droplet_frequency: float = droplet_frequency_cm/(100**3)
     initial_droplet_sizes = np.arange(1e-7, 1e-3, 1e-6) # Are these reasonable sizes???
+    r_surrounding = 1e-6 # Is this sensible??
     t = 0
     dt = 0.01
     distance = 200 # ???
@@ -154,7 +187,7 @@ def main():
     for radius in initial_droplet_sizes:
         r = radius
         while distance > 0:
-            r += droplet_growth(r, radius, droplet_frequency) # Should we be using radius here, this is the radius of other droplets??
+            r += droplet_growth(r, r_surrounding, droplet_frequency, vel, w) # Should we be using radius here, this is the radius of other droplets??
             vel = terminal_velocity(r)
             dist -= dt*vel
         final_radii.append(r)
