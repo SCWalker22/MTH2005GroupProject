@@ -179,9 +179,6 @@ def falling_droplet(size_range: list[float] | np.ndarray[float], velocity_method
             # Iterate drop size
             # print(dr_dt(s, r, temp, press))
             r -= dt*dr_dt(s, r, temp, press)
-
-            temp += dt*dT_dt(s, r, temp, press)
-            press += dt*dP_dt(s, r, temp, press)
         # print(f"{radius=}, {r=}, {distance=}")
         dist_list.append(distance)
         final_drop_size.append(r)
