@@ -235,21 +235,21 @@ def main():
     # Plotting graphs for different size droplets, classified (roughly) into different groups, can clean this up and find actual size ranges
     size_range = np.arange(1e-7, 1e-4,1e-7)
     dist_list, _ = falling_droplet(size_range, velocity_method, dt = 0.001)
-    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig1")
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation)", "Fig1")
     
     size_range = np.arange(1e-5, 3e-3,1e-5)
     dist_list, _ = falling_droplet(size_range, velocity_method, dt = 0.1)
-    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig2", y_lim=(0, 500))
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation)", "Fig2", y_lim=(0, 500))
 
     size_range = np.arange(1e-3, 1e-1, 1e-3)
     dist_list, final_sizes = falling_droplet(size_range, velocity_method, dt = 0.1)
-    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig3", y_lim=(0, 500))
-    plot_graph(size_range, final_sizes, f"Final Droplet radius as droplet evaporates whilst falling {velocity_method}", "Fig4", y_label = "Final Droplet Radius (m)")
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation)", "Fig3", y_lim=(0, 500))
+    plot_graph(size_range, final_sizes, f"Final Droplet radius as droplet evaporates whilst falling", "Fig4", y_label = "Final Droplet Radius (m)")
 
     size_range = np.arange(1e-2, 1, 1e-2)
     dist_list, final_sizes = falling_droplet(size_range, velocity_method, dt = 0.1)
-    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation) {velocity_method}", "Fig5", y_lim=(0, 500))
-    plot_graph(size_range, final_sizes, f"Final Droplet radius as droplet evaporates whilst falling {velocity_method}", "Fig6", y_label = "Final Droplet Radius (m)")
+    plot_graph(size_range, dist_list, f"Height above ground where droplet 'disappears' (by evaporation)", "Fig5", y_lim=(0, 500))
+    plot_graph(size_range, final_sizes, f"Final Droplet radius as droplet evaporates whilst falling", "Fig6", y_label = "Final Droplet Radius (m)")
     # Could plot percentage size of initial size???
 
 def multi_plot():
