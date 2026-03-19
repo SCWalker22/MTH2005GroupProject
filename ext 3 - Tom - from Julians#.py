@@ -16,7 +16,7 @@ Ra = 287.0                     # Gas constant of dry air (J kg^-1 K^-1)
 Rv = 462.0                     # Gas constant of water vapour (J kg^-1 K^-1)
 k = 0.024                      # Thermal conductivity of air (J m^-1 s^-1 K^-1)
 Kv = 2.21e-5                   # Diffusivity of water vapour (m^2 s^-1)
-W = 1.0                        # Vertical velocity (m/s)
+W = -1.0                        # Vertical velocity (m/s)
 N = 1e8                        # Droplet number concentration (#/m^3)
 
 
