@@ -323,6 +323,7 @@ def part_d():
     plt.xlabel("Temperature (K)")
     plt.ylabel("Time taken to reach precipitation size (days)")
     plt.savefig("Q1D.png", dpi=1200)
+    plt.grid()
     plt.show()
 
     # printing final time taken to show shortest time
@@ -336,6 +337,7 @@ def part_d():
     plt.xlim(t_min, t_max)
     plt.xlabel("Temperature (K)")
     plt.ylabel("Time taken to reach drizzle size (hours)")
+    plt.grid()
     plt.show()
 
     # printing time taken for lowest temperature (longest time)
@@ -362,6 +364,7 @@ def part_e():
     plt.xlabel("Temperature (K)")
     plt.ylabel("Time taken to evaporate completely (s)")
     plt.savefig("Q1E.png", dpi=1200)
+    plt.grid()
     plt.show()
 
 
