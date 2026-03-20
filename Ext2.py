@@ -46,43 +46,9 @@ def supersaturation(s,r):
     return (A1*W)-A2*((4*Pi*Rho_w*N)/Rho_a * r**2 * (A3*s/r))
 
 
-
-
-
-# Equations for Extension 2 to calculate albedo
-
-
-#dont think we need LWC, think we can say its constant
-
-#def LWC(r, N):
-#    return N* (4/3) * Pi * (r**3) * Rho_w
-
-
-#def LWP(r, N, dz):
-#    return np.sum(LWC * dz)
-
 #effective radius
 def eff_rad(N):
     return (LWC/ ((4/3)*Pi*N*Rho_w))**(1/3)
-
-
-#use formular from slide 9 week 4
-#def optical_depth(r, N, dz):
-#    lwp = LWP(r, N, dz) 
-#    r_e = eff_rad(N)
-#    return (3* lwp)/ (2* Rho_w * r_e)
-
-
-# slide 10
-#def albedo(r, N, dz):
-#    tau = optical_depth(r, N, dz)
-#    g = 0.85   #asymmetry coefficient
-#    return ((1-g)*tau)/(2 + (1-g)*tau)
-
-
-
-
-
 
 
 #timestepping---- 
@@ -90,12 +56,11 @@ def eff_rad(N):
 dz = 0.01           # height step (m)
 z_max = 2000.0     # cloud depth (m)
 
-dt = dz / W # time step (s)
+dt = dz / W      # time step (s)
 
-nsteps = int(z_max/dz)
+nsteps = int(z_max/dz) #step size
 
-
-
+#using runge-kutta
 def simulate_cloud(N):
 
     zr = np.zeros(nsteps)
@@ -157,15 +122,8 @@ plt.grid()
 plt.show()
 
 
-
-
-
-
-
-
-
 # now for a changing N ----------
-#without rewriting RK4
+#without rewriting RK4 for efficiency
 
 alpha_results = np.zeros(len(N_values))
 
@@ -175,7 +133,7 @@ for j, N in enumerate(N_values):
     
     alpha_results[j] = alpha[-1]   # cloud-top albedo
 
-
+#plotting N vs albedo
 plt.plot( N_values, alpha_results)
 
 plt.xlabel("Droplet concentration, N ")
@@ -183,19 +141,5 @@ plt.ylabel("Cloud Albedo")
 plt.title("Cloud Albedo vs Droplet Number Concentration")
 plt.grid()
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
