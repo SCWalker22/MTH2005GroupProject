@@ -40,21 +40,7 @@ from svp import svp   # Uncomment if svp is in a separate file
 W = 1.0                      # Vertical velocity (m/s)
 N = 1e8        # Droplet number concentration (#/m^3)
 
-# --------------------------------------------------------------------------
-# Main program starts here
 
-def main():
-    """
-    Main model driver.
-    Implement parcel ascent and droplet growth equations here.
-    """
-    pass
-
-
-if __name__ == "__main__":
-    main()
-
-# ---------------------------------------------------------------------------
 p = 90000 # let pressure be constant 900HPa
 T = 283
 X1 = [0,T]
@@ -83,7 +69,7 @@ S = np.zeros(nsteps) # supersaturation
 r = np.zeros(nsteps) # droplet radius 
 
 # initial values 
-S[0]=0.001 # initial supersaturation (0.1%)
+S[0] = 0.001 # initial supersaturation (0.1%)
 r[0] = 1e-6 # initial droplet size (1 micron) 
 
 
@@ -267,11 +253,15 @@ for j,dz in enumerate(Dz):
         Sr[i+1] = Sr[i] + (dt/6)*(k1s + 2*k2s + 2*k3s + k4s)
         rr[i+1] = rr[i] + (dt/6)*(k1r + 2*k2r + 2*k3r + k4r)
 
-
+    #print("dz={dz}")
+    print(r[-1] * 1e6, rr[-1] * 1e6)
+    print(r[-1] * 1e6 - rr[-1] * 1e6)
+    
+    
     # plotting forward euler vs rk4 droplet growth 
     # plotting forward euler droplet growth 
     plt.subplot(2,2,2*j+1)
-    plt.plot(r, z, color='blue')
+    plt.plot(r * 1e6, z, color='blue')
     plt.title(f"Forward Euler (dz={dz})", size = 14)
     plt.ylabel("Height (m)")
     plt.xlabel("Droplet Radius (microns)")
@@ -279,7 +269,7 @@ for j,dz in enumerate(Dz):
 
     # plotting rk4 droplet growth 
     plt.subplot(2,2,2*j+2)
-    plt.plot(rr, zr, color='red')
+    plt.plot(rr * 1e6, zr, color='red')
     plt.title(f"Runge Kutta 4 (dz={dz})", size = 14)
     plt.ylabel("Height (m)")
     plt.xlabel("Droplet Radius (microns)")
