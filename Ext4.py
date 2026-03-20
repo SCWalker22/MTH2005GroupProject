@@ -182,7 +182,7 @@ def main():
     r_surrounding = 1e-6 # Is this sensible??
     t = 0
     dt = 0.01
-    distance = 200 # ???
+    distance = 1000 # ???
     final_radii: list[float] = []
     for radius in initial_droplet_sizes:
         r = radius

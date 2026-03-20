@@ -217,9 +217,9 @@ def plot_graph(
     if y_2 is not None:
         plt.plot(x, y_2, label="Given Terminal Velocity")
         plt.legend()
-    plt.title(title)
-    plt.xlabel(x_label)
-    plt.ylabel(y_label)
+    plt.title(title, fontsize=20)
+    plt.xlabel(x_label, fontsize=14)
+    plt.ylabel(y_label, fontsize=14)
     if y_lim is not None:
         plt.ylim(*y_lim)
     plt.savefig(f"Ext3{graph_name}.png", dpi=1200)
