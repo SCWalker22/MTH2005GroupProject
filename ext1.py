@@ -1,7 +1,6 @@
-# Please watch out for when you need to use cm^-3 or m^-3
-
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 from svp import svp
 
 
@@ -156,9 +155,9 @@ def main(r0, N_val, W_val, z_top = cloud_height):
 
 # Parameter ranges
 
-r0_vals = np.linspace(0.5e-6, 5e-6, 100)
-N_vals = np.linspace(50e6, 400e6, 100)
-W_vals = np.linspace(0.2, 2.0, 100)
+r0_vals = np.linspace(0.5e-6, 10e-6, 50)
+N_vals = np.linspace(50e6, 800e6, 50)
+W_vals = np.linspace(0.2, 4.0, 50)
 
 
 # Results
@@ -194,39 +193,45 @@ for W_val in W_vals:
 
 # Plots
 
-plt.figure(figsize=(8, 5))
+plt.figure(figsize=(15, 8))
 
 plt.subplot(2, 3, 1)
 plt.plot([r*1e6 for r in r0_vals], r_final_r0, '-')
 plt.xlabel('r0 (um)')
 plt.ylabel('r_final (um)')
-plt.title('Final radius vs Initial Radius')
+plt.title('Final Radius vs Initial Radius')
+plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=8))
 
 plt.subplot(2, 3, 4)
 plt.plot([r*1e6 for r in r0_vals], S_max_r0, '-')
 plt.xlabel('r0 (um)')
 plt.ylabel('S_max')
-plt.title('Max S vs Initial Radius')
+plt.title('Max Supersaturation vs Initial Radius')
+plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=8))
 
 plt.subplot(2, 3, 2)
 plt.plot([N/1e6 for N in N_vals], r_final_N, '-')
 plt.xlabel('N (cm^-3)')
-plt.title('Final radius vs N')
+plt.title('Final Radius vs Droplet no. Concentration')
+plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=8))
 
 plt.subplot(2, 3, 5)
 plt.plot([N/1e6 for N in N_vals], S_max_N, '-')
 plt.xlabel('N (cm^-3)')
-plt.title('Max S vs N')
+plt.title('Max Supersaturation vs Droplet no. Concentration')
+plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=8))
 
 plt.subplot(2, 3, 3)
 plt.plot(W_vals, r_final_W, '-')
 plt.xlabel('W (m/s)')
-plt.title('Final radius vs W')
+plt.title('Final Radius vs Vertical Velocity')
+plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=8))
 
 plt.subplot(2, 3, 6)
 plt.plot(W_vals, S_max_W, '-')
 plt.xlabel('W (m/s)')
-plt.title('Max S vs W')
+plt.title('Max Supersaturation vs Vertical Velocity')
+plt.gca().xaxis.set_major_locator(MaxNLocator(nbins=8))
 
 plt.tight_layout()
 plt.show()
