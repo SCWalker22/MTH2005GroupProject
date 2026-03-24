@@ -145,6 +145,9 @@ def collection_efficiency(
     """
 
     """
+    #Test
+    x0 = 0.1*r_current
+    #Test
     return (x0/(r_current + r_surrounding))**2
 
 def droplet_growth(
@@ -178,21 +181,57 @@ def main():
     """
     droplet_frequency_cm: int = 200 # cm^-3
     droplet_frequency: float = droplet_frequency_cm/(100**3)
-    initial_droplet_sizes = np.arange(1e-7, 1e-3, 1e-6) # Are these reasonable sizes???
+    initial_droplet_sizes = np.arange(1e-5, 1e-2, 1e-6) # Are these reasonable sizes???
     r_surrounding = 1e-6 # Is this sensible??
     t = 0
-    dt = 0.01
+    dt = 0.1
     distance = 1000 # ???
+    CLOUD_BASE = 500 # m
+    top_radii: list[float] = []
     final_radii: list[float] = []
+    total_collision: list[float] = []
+    total_coalescence: list[float] = []
     for radius in initial_droplet_sizes:
+        collision_this_droplet = 0
+        coalescence_this_droplet = 0
+        coalescence = 0
+        collision = 0
+        print(radius)
         r = radius
-        while distance > 0:
-            r += droplet_growth(r, r_surrounding, droplet_frequency, vel, w) # Should we be using radius here, this is the radius of other droplets??
+        while distance > CLOUD_BASE:
+            # print(distance)
             vel = terminal_velocity(r)
-            dist -= dt*vel
+            collision = dt*droplet_growth(r, r_surrounding, droplet_frequency, vel, W)
+            collision_this_droplet += collision
+            r += collision
+            # Plus supersaturation
+            coalescence = dt*dr_dt(s, r, T, p) # S = ???
+            r += coalescence
+            coalescence_this_droplet += coalescence
+            distance -= dt*vel
+        total_coalescence.append(coalescence_this_droplet)
+        total_collision.append(collision_this_droplet)
+        top_radii.append(r)
+        while distance >= 0:
+            vel = terminal_velocity(r)
+            r -= dt*dr_dt(0.7, r, T, p)
+            distance -= dt*vel
         final_radii.append(r)
     plt.figure(figsize=(16,9))
     plt.plot(initial_droplet_sizes, final_radii, label="Final Droplet size")
+    plt.plot(initial_droplet_sizes, top_radii, label="Radius at top")
+    plt.xlabel("Initial Droplet radius", fontsize=14)
+    plt.ylabel("Final drop radius", fontsize=14)
+    plt.legend()
+    plt.grid()
+    plt.show()
+
+    plt.figure(figsize=(16,9))
+    plt.plot(initial_droplet_sizes, total_coalescence, label="Growth due to coalescence")
+    plt.plot(initial_droplet_sizes, total_collision, label="Growth due to collision")
+    plt.xlabel("Initial Droplet radius", fontsize=14)
+    plt.ylabel("Final drop radius", fontsize=14)
+    plt.legend()
     plt.grid()
     plt.show()
 
