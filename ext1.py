@@ -77,7 +77,8 @@ def main(r0, N_val, W_val, z_top = cloud_height):
     
     dz = 0.1 # Height step (m)
     dt = dz/W_val # Find time step
-    nsteps = int(z_top/dz)
+    t_total = 300  # Seconds
+    nsteps = int(t_total/dt)
 
     
     # Fourth order Runge-Kutta

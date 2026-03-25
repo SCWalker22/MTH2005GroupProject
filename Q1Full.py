@@ -259,9 +259,11 @@ def graph_slices(
     # Plot graph based on user inputs
     plt.figure(figsize=(16, 9))
     plt.grid()
-    plt.title(graph_title)
-    plt.xlabel(x_axis_label)
-    plt.ylabel("Final size of drop (m)")
+    plt.title(graph_title, fontsize=20)
+    plt.xlabel(x_axis_label, fontsize=16)
+    plt.ylabel("Final size of drop (m)", fontsize=16)
+    plt.xticks(fontize=14)
+    plt.yticks(fontsize=14)
     plt.plot(x, final_sizes)
     plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}.png", dpi=1200) 
     plt.show()
@@ -276,7 +278,7 @@ def part_c():
     temp_range = np.arange(t_min, t_max, 10) # Create a range of temperatures to iterate through
     init_size_range = np.arange(1e-7, 1e-5, 1e-7) # Create a range of intial sizes to loop through
     times: list[int] = [10*60, 20*60, 30*60, 40*60] # List of times to loop thorugh, to check growth throughout time frame
-    X, Y = np.meshgrid(init_size_range, temp_range) # Create a meshgrid for X, Y axis, allows us to do a 3D plot
+    X, Y = np.meshgrid(init_size_range*1e6, temp_range) # Create a meshgrid for X, Y axis, allows us to do a 3D plot
     for time_end in times: # Loop through times
         final_sizes: list[list[float]] = [] # Create an array to fill with final sizes, it is a 2D array since we have a 3D graph
         for temp in temp_range: # Loop through different temperaturs
@@ -289,9 +291,11 @@ def part_c():
         # X, Y = np.meshgrid(init_size_range, temp_range)
         # ax = plt.axes(projection="3d")
         # Set up graph
-        ax.set_title("3D surface of drop size by varying temperature and initial drop size")
-        ax.set_xlabel("Initial Drop size (m)")
-        ax.set_ylabel("Temperature")
+        ax.set_title("3D surface of drop size by varying temperature and initial drop size", fontsize=20)
+        ax.set_xlabel("Initial Drop size (um)", fontsize=16)
+        ax.set_ylabel("Temperature (K)", fontsize=16)
+        ax.set_zlabel("Final Droplet radius (um)", fontsize=14)
+        ax.tick_params(labelsize=14)
         ax.plot_surface(X, Y, np.array(final_sizes), label=f"Drop Size after {time_end/60} mins")
     plt.legend(loc="upper right")
     plt.savefig("Q1C(3D).png", dpi=1200)
