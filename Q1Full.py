@@ -262,7 +262,7 @@ def graph_slices(
     plt.title(graph_title, fontsize=20)
     plt.xlabel(x_axis_label, fontsize=16)
     plt.ylabel("Final size of drop (m)", fontsize=16)
-    plt.xticks(fontize=14)
+    plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
     plt.plot(x, final_sizes)
     plt.savefig(f"{temp_or_size} [{min(x)}, {max(x)}] @ {other_val}.png", dpi=1200) 
