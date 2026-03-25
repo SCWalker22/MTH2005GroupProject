@@ -218,6 +218,8 @@ def plot_graph(
         plt.plot(x, y_2, label="Given Terminal Velocity")
         plt.legend()
     plt.title(title, fontsize=20)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
     plt.xlabel(x_label, fontsize=16)
     plt.ylabel(y_label, fontsize=16)
     if y_lim is not None:

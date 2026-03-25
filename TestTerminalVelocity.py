@@ -85,6 +85,8 @@ if __name__=="__main__":
     plt.legend()
     plt.grid()
     plt.xlabel("Initial Droplet radius (m)", fontsize=14)
+    plt.xticks(fontsize=14)
+    flt.yticks(fontsize=14)
     plt.ylabel("Terminal Velocity (ms^-1)", fontsize=14)
     plt.title("Terminal velocity of droplet of given size", fontsize=20)
     plt.savefig("TerminalVelocity.png", dpi=1200)
