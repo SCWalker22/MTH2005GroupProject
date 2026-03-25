@@ -22,7 +22,7 @@ Kv = 2.21e-5                   # Diffusivity of water vapour (m^2 s^-1)
 # Define initial vertical velocity and droplet number concentration
 
 # Example placeholders — replace with your values
-W = 10                      # Vertical velocity (m/s)
+W = 1                      # Vertical velocity (m/s)
 N = 1e8        # Droplet number concentration (#/m^3)
 
 T = 283 #Kelvin
@@ -76,87 +76,25 @@ def dr_dt(s,r):
 dz = 0.01           # height step (m)
 z_max = 2000.0     # cloud depth (m)
 
-#dt = dz / W # time step (s)
+dt = dz / W # time step (s)
 
-#steps = int(z_max/dz)
-
-# Arrays to store results
-#z = np.zeros(steps)
-#s = np.zeros(steps)
-#r = np.zeros(steps)
-
-# Initial values
-#s[0] = 0.0      # initial supersaturation
-#r[0] = 1e-6       # 1 micron droplet
-
-
-# FORWARD EULER ----------------
-
-# code for JUST supersatutaion ------------------ add below
-
-
-# plotting for different values of W
-
-# Different vertical velocities to test
-W_values = [1, 5, 10, 20]   # m/s
-
-plt.figure()
-
-for W in W_values:
-    
-    dt = dz / W # time step (s)
-
-    steps = int(z_max/dz)
-    
-    # Arrays to store results
-    z = np.zeros(steps)
-    s = np.zeros(steps)
-    r = np.zeros(steps)
-
-    # Initial values
-    s[0] = 0.0      # initial supersaturation
-    r[0] = 1e-6       # 1 micron droplet
-
-    for i in range(steps-1):
-
-        dt = dz / W
-
-        drdt = dr_dt(s[i], r[i])
-        dsdt = ds_dt(s[i], r[i])
-
-        r[i+1] = r[i] + dt * drdt
-        s[i+1] = s[i] + dt * dsdt
-
-        z[i+1] = z[i] + dz
-        
-    # Plot each W
-    plt.plot(s, z, label=f"W = {W} m/s")
-
-
-# PLOTTING ---------------------
-plt.plot(s,z)
-plt.xlabel("Supersaturation, s",size =13)
-plt.ylabel("Height (m)",size =13)
-plt.title("Evolution of Supersaturation in rising parcel",size=15)
-plt.grid()
-plt.legend()
-plt.show()
-
-
-#plot just for when W=1
-W = 1
-
-dt = dz / W
 steps = int(z_max/dz)
 
+# Arrays to store results
 z = np.zeros(steps)
 s = np.zeros(steps)
 r = np.zeros(steps)
 
-s[0] = 0.0
-r[0] = 1e-6
+# Initial values
+s[0] = 0.0      # initial supersaturation
+r[0] = 1e-6       # 1 micron droplet
+
+
+# FORWARD EULER ----------------
 
 for i in range(steps-1):
+
+    dt = dz / W
 
     drdt = dr_dt(s[i], r[i])
     dsdt = ds_dt(s[i], r[i])
@@ -166,17 +104,15 @@ for i in range(steps-1):
 
     z[i+1] = z[i] + dz
 
-# Plot ONLY W=1
-plt.figure()
-plt.plot(s, z, label="W = 1 m/s")
-plt.xlabel("Supersaturation, s", size=13)
-plt.ylabel("Height (m)", size=13)
-plt.title("Supersaturation (W = 1 m/s)", size=15)
+
+# PLOTTING ---------------------
+plt.plot(z, s)
+plt.ylabel("Supersaturation, s",size =13)
+plt.xlabel("Height (m)",size =13)
+plt.title("Evolution of Supersaturation in rising parcel",size=15)
 plt.grid()
-plt.legend()
 plt.show()
 
-#plot droplet size
 plt.plot(z, r * 1e6)
 plt.ylabel("Droplet Radius (µm)",size=13)
 plt.xlabel("Height (m)",size=13)

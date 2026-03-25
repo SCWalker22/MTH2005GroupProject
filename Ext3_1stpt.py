@@ -135,16 +135,17 @@ for i in range(nsteps - 1):
 
 #### plots
     
-fig, axes = plt.subplots(2,1, figsize = (10,12),sharex = False)
+fig, axes = plt.subplots(2,1, figsize = (8,10),sharex = False)
 
 ## first height vs supersation
 axes[0].plot(S_rk, z_rk)
-axes[0].set_xlabel("Supersaturation", size = 18)
-axes[0].set_ylabel("Height, Meters", size = 18)
+axes[0].set_xlabel("Supersaturation")
+axes[0].set_ylabel("Height, Meters")
+##plt.show()
 
 ### Height vs Droplet size
 axes[1].plot(r_rk, z_rk)
-axes[1].set_xlabel("Droplet Size, Meters", size = 18)
-axes[1].set_ylabel("Height, Meters", size = 18)
+axes[1].set_xlabel("Droplet Size, Mirco meters")
+axes[1].set_ylabel("Height, Meters")
 plt.show()
 
